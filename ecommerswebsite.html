@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecommers App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <style>
+        .card-img-top {
+            width: 100%;
+            height: 300px;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a href="#" class="navbar-brand">Ecommers</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a href="ecommerswebsite.html" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="ecommerswebsite.html" class="nav-link">Show Product</a></li>
+                <li class="nav-item dropdown"><a href="#" class="nav-link dropdown-toggle" id="navbardrop"
+                        data-toggle="dropdown">Category</a>
+                    <div class="dropdown-menu" id="dropdown">
+
+                    </div>
+                </li>
+            </ul>
+        </div>  
+    </nav>
+
+    <div class="container">
+        <div class="row" id="products"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        function getAllProduct() {
+            let str = '';
+            axios.get("https://fakestoreapi.com/products").then((res) => {
+                res.data.forEach((items, index) => {
+                    str += `<div class="col-sm-4 mt-3"><div class="card">
+                        <img class="card-img-top" src="${items.image}" alt="Card image">
+                        <div class="card-body">
+                            <h4 class="card-title">${items.title.slice(0, 30)}</h4>
+                            <p class="card-text">${items.description.slice(0, 30)}</p>
+                            <a href="#" onclick="productDetails(${items.id})" class="btn btn-primary">View Details</a>
+                        </div>
+                        </div></div>`
+                });
+                document.getElementById("products").innerHTML = str;
+            })
+        }
+        getAllProduct();
+
+
+        // category function
+        function getALLCategory() {
+            let sttr = '';
+            axios.get("https://fakestoreapi.com/products/categories").then((res) => {
+                res.data.forEach((items, index) => {
+                    sttr += `<a href="#" onclick="getCategoryProduct(this)" class="dropdown-item">${items}</a>`
+                });
+                document.getElementById("dropdown").innerHTML = sttr;
+            }).catch(error => console.log(error));
+        }
+        getALLCategory();
+
+
+        //product details
+        function productDetails(pid) {
+            localStorage.setItem("productId", pid);
+            window.location = "view_details.html";
+        }
+
+        function getCategoryProduct(e){
+            let categoryName = e.innerText;
+            let str = '';
+            axios.get(`https://fakestoreapi.com/products/category/${categoryName}`).then((res)=>{
+                res.data.forEach((items, index)=>{
+                    str += `<div class="col-sm-4 mt-3"><div class="card">
+                <img class="card-img-top" src="${items.image}" alt="Card image">
+                <div class="card-body">
+                    <h4 class="card-title">${items.title.slice(0,30)}</h4>
+                    <p class="card-text">${items.description.slice(0,50)}</p>
+                    <a href="#" onclick='productDetails(${items.id})' class="btn btn-primary">View Details</a>
+                </div>
+                </div></div>`
+            });
+            document.getElementById("products").innerHTML = str;
+        });
+    }
+
+
+
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.3/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
